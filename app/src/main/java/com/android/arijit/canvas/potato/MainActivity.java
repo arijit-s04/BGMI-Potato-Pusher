@@ -26,12 +26,14 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
-    private String FILE_NAME = "game_patch_1.4.1.15924.pak";
+    private final String TAG = "potato";
+    private String FILE_NAME;
     private ActivityMainBinding binding;
     private final String[] perm = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private Uri dest;
     @SuppressLint("SdCardPath")
-    private String srcPath = "/sdcard/potato/";
+    private String srcPath = null;
+    private final String BGMI_PAK_PATH = "content://com.android.externalstorage.documents/tree/primary%3AAndroid/document/primary%3AAndroid%2Fdata%2Fcom.pubg.imobile%2Ffiles%2FUE4Game%2FShadowTrackerExtra%2FShadowTrackerExtra%2FSaved%2FPaks";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +42,9 @@ public class MainActivity extends AppCompatActivity {
         loadFiles();
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        binding.tvPakName.setText(FILE_NAME);
+        binding.tvPakName.setText(fetchFileName());
         checkPermissions();
 
-        dest = Uri.parse("content://com.android.externalstorage.documents/tree/primary%3AAndroid/document/primary%3AAndroid%2Fdata%2Fcom.pubg.imobile%2Ffiles%2FUE4Game%2FShadowTrackerExtra%2FShadowTrackerExtra%2FSaved%2FPaks%2F" + FILE_NAME);
         try {
             grantUriPermission("com.android.arijit.canvas.potato", dest, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
         } catch (Exception e) {
@@ -53,11 +54,14 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(i, 1001);
         }
 
-        srcPath += FILE_NAME;
-
 
         binding.btnPush.setOnClickListener(v -> {
             binding.tvReport.setVisibility(View.GONE);
+            if(srcPath == null) {
+                toggle(binding.tvReport);
+                binding.tvReport.setText(getText(R.string.no_file));
+                return;
+            }
             File patch = new File("/storage/emulated/0/Android/data/com.pubg.imobile/files/UE4Game/ShadowTrackerExtra/ShadowTrackerExtra/Saved/Paks/" + FILE_NAME);
             if (patch.exists()) {
                 toggle(binding.tvReport);
@@ -73,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             toggle(binding.progressBar);
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
                 Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                i.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.parse("content://com.android.externalstorage.documents/tree/primary%3AAndroid/document/primary%3AAndroid%2Fdata%2Fcom.pubg.imobile%2Ffiles%2FUE4Game%2FShadowTrackerExtra%2FShadowTrackerExtra%2FSaved%2FPaks"));
+                i.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.parse(BGMI_PAK_PATH));
                 i.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
                 startActivityForResult(i, 9999);
             }
@@ -84,21 +88,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         binding.editTool.setOnClickListener(v -> {
-            toggle(binding.tvPakName);
-            toggle(binding.editTool);
-            toggle(binding.etPakName);
-            toggle(binding.doneTool);
-            binding.etPakName.setText(FILE_NAME);
-        });
-
-        binding.doneTool.setOnClickListener(v -> {
-            String newFile = binding.etPakName.getText().toString();
-            setFiles(newFile);
-            toggle(binding.tvPakName);
-            toggle(binding.editTool);
-            toggle(binding.etPakName);
-            toggle(binding.doneTool);
-            binding.tvPakName.setText(FILE_NAME);
+            Intent readFileIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            readFileIntent.addCategory(Intent.CATEGORY_OPENABLE);
+            readFileIntent.setType("*/*");
+            startActivityForResult(readFileIntent, 5005);
         });
 
     }
@@ -128,6 +121,11 @@ public class MainActivity extends AppCompatActivity {
                 if(data != null)
                     getContentResolver().takePersistableUriPermission(data.getData(), Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 break;
+            case 5005:
+                if (data == null)   break;
+                Log.i(TAG, "onActivityResult: "+data.getData().getPath());
+                trimPathAndSet(data.getData().getPath());
+                break;
         }
     }
 
@@ -143,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
             v.setVisibility(View.GONE);
         } else v.setVisibility(View.VISIBLE);
     }
+
     private void transferFile() {
         String res = null;
         try {
@@ -170,17 +169,21 @@ public class MainActivity extends AppCompatActivity {
             binding.tvReport.setText(res);
         }
     }
+
     private void loadFiles(){
         SharedPreferences sh = getSharedPreferences("filename", MODE_PRIVATE);
-        FILE_NAME = sh.getString("name", FILE_NAME);
+        srcPath = sh.getString("path", null);
+        FILE_NAME = fetchFileName();
+        dest = Uri.parse(BGMI_PAK_PATH + "%2F" + FILE_NAME);
     }
+
     @SuppressLint("ApplySharedPref")
-    private void setFiles(String fileName){
-        FILE_NAME = fileName;
+    private void setFiles(){
         SharedPreferences.Editor et = getSharedPreferences("filename", MODE_PRIVATE).edit();
-        et.putString("name", FILE_NAME);
+        et.putString("path", srcPath);
         et.commit();
     }
+
     private void transferFileNonScoped(){
         String res = null;
         try{
@@ -206,6 +209,31 @@ public class MainActivity extends AppCompatActivity {
             binding.tvReport.setText(res);
         }
     }
+
+    private void trimPathAndSet(String path){
+        srcPath = getString(R.string.sdcard) + path.substring(18);
+        FILE_NAME = fetchFileName();
+        dest = Uri.parse(BGMI_PAK_PATH + "%2F" + FILE_NAME);
+        binding.tvPakName.setText(FILE_NAME);
+        setFiles();
+    }
+
+    private String fetchFileName(){
+        if(srcPath == null){
+            return getString(R.string.no_file);
+        }
+
+        String file = null;
+        for(int i = srcPath.length()-1;i>=0;i--){
+            if(srcPath.charAt(i) == '/'){
+                file = srcPath.substring(i+1);
+                break;
+            }
+        }
+
+        return file;
+    }
+
 }
 /*
 ParcelFileDescriptor pfd = getActivity().getContentResolver().

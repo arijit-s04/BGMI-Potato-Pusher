@@ -10,4 +10,6 @@
     <string name="exists">Already Present</string>
     <string name="no_input">Input file does not exist</string>
     <string name="permission_denied">Permission Denied</string>
+    <string name="sdcard">/sdcard/</string>
+    <string name="no_file">No File Selected</string>
 </resources>
