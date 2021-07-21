@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/btn_push"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/btn_back"
+        android:text="Push Potato"
+        app:backgroundTint="@color/back"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_pak_name"
+        app:layout_constraintVertical_bias="0.344" />
+
+    <TextView
+        android:id="@+id/tv_pak_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="game_patch"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/info"
+        app:layout_constraintVertical_bias="0.2" />
+    <EditText
+        android:id="@+id/et_pak_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="game_patch"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintVertical_bias="0.2"
+        android:visibility="gone"/>
+    <ImageView
+        android:id="@+id/edit_tool"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_edit_24"
+        app:layout_constraintTop_toTopOf="@id/tv_pak_name"
+        app:layout_constraintBottom_toBottomOf="@id/tv_pak_name"
+        app:layout_constraintStart_toEndOf="@id/tv_pak_name"
+        android:layout_marginStart="16dp"
+        android:visibility="visible"
+        />
+    <ImageView
+        android:id="@+id/done_tool"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_done_24"
+        app:layout_constraintTop_toTopOf="@id/et_pak_name"
+        app:layout_constraintBottom_toBottomOf="@id/et_pak_name"
+        app:layout_constraintStart_toEndOf="@id/et_pak_name"
+        android:layout_marginStart="16dp"
+        android:visibility="gone"
+        />
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/btn_push"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="gone"/>
+    <TextView
+        android:id="@+id/tv_report"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textAlignment="center"
+        app:layout_constraintTop_toBottomOf="@id/btn_push"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="Report"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Place the file in Internal storage/potato/YOUR_FILE_HERE\nand change accordingly in the app"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.095" />
+</androidx.constraintlayout.widget.ConstraintLayout>
