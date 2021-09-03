@@ -10,8 +10,8 @@
         android:id="@+id/btn_push"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/btn_back"
-        android:text="Push Potato"
+        android:background="@drawable/ripple"
+        android:text="@string/push"
         app:backgroundTint="@color/back"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -26,7 +26,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:textAlignment="center"
-        android:text="game_patch"
+        android:text="@string/app_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -45,7 +45,7 @@
         app:layout_constraintEnd_toEndOf="@id/tv_pak_name"
         android:layout_marginTop="16dp"
         android:visibility="visible"
-        />
+        android:contentDescription="@string/edit_file" />
 
     <ProgressBar
         android:id="@+id/progress_bar"
@@ -63,21 +63,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:textAlignment="center"
         app:layout_constraintTop_toBottomOf="@id/btn_push"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:text="Report"
+        app:layout_constraintBottom_toTopOf="@id/help"
+        android:text="@string/app_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:visibility="gone"/>
 
     <TextView
-        android:id="@+id/info"
+        android:id="@+id/help"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Place the file in Internal storage/potato/YOUR_FILE_HERE\nand change accordingly in the app"
+        android:layout_marginBottom="16dp"
+        android:text="@string/help"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone"
-        app:layout_constraintVertical_bias="0.095" />
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,4 +12,8 @@
     <string name="permission_denied">Permission Denied</string>
     <string name="sdcard">/sdcard/</string>
     <string name="no_file">No File Selected</string>
+    <string name="push">Push Potato</string>
+    <string name="edit_file">change file</string>
+    <string name="help">Need help? Contact developer</string>
+    <string name="contact"> Contact developer</string>
 </resources>

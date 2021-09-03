@@ -2,13 +2,20 @@ package com.android.arijit.canvas.potato;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
 
@@ -19,6 +26,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.documentfile.provider.DocumentFile;
 
 import com.android.arijit.canvas.potato.databinding.ActivityMainBinding;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("SdCardPath")
     private String srcPath = null;
     private final String BGMI_PAK_PATH = "content://com.android.externalstorage.documents/tree/primary%3AAndroid/document/primary%3AAndroid%2Fdata%2Fcom.pubg.imobile%2Ffiles%2FUE4Game%2FShadowTrackerExtra%2FShadowTrackerExtra%2FSaved%2FPaks";
-
+    private final String MAIL_CONTENT = "mailto:sarijit@gmail.com" +
+            "?subject="+Uri.encode("Help regarding potato app");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,15 +52,18 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         binding.tvPakName.setText(fetchFileName());
+        setContactView();
         checkPermissions();
 
-        try {
-            grantUriPermission("com.android.arijit.canvas.potato", dest, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        } catch (Exception e) {
-            Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-            i.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.parse("content://com.android.externalstorage.documents/tree/primary%3AAndroid/document/primary%3AAndroid"));
-            i.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-            startActivityForResult(i, 1001);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            try {
+                grantUriPermission(getPackageName(), dest, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } catch (Exception e) {
+                Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                i.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.parse("content://com.android.externalstorage.documents/tree/primary%3AAndroid/document/primary%3AAndroid"));
+                i.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                startActivityForResult(i, 1001);
+            }
         }
 
 
@@ -94,6 +106,27 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(readFileIntent, 5005);
         });
 
+
+    }
+
+    private void setContactView() {
+        SpannableString ss = new SpannableString(getString(R.string.help));
+        ClickableSpan clickableSpan = new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View widget) {
+                Intent email = new Intent(Intent.ACTION_SENDTO);
+                email.setData(Uri.parse(MAIL_CONTENT));
+                try {
+                    startActivity(email);
+                } catch (ActivityNotFoundException e) {
+                    Snackbar.make(widget, "Unable to send e-mail", Snackbar.LENGTH_LONG).show();
+                }
+            }
+        };
+        ss.setSpan(clickableSpan, 11, 28, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        binding.help.setText(ss);
+        binding.help.setMovementMethod(LinkMovementMethod.getInstance());
+        binding.help.setHighlightColor(Color.TRANSPARENT);
     }
 
     @Override
